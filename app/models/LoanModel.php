@@ -48,6 +48,27 @@ class LoanModel {
         return $this->db->rowCount();
     }
 
+    public function countActive() {
+        $this->db->query("SELECT COUNT(*) as total FROM " . $this->table . " WHERE status = 'borrowed'");
+        return $this->db->single()['total'];
+    }
+
+    public function countReturned() {
+        $this->db->query("SELECT COUNT(*) as total FROM " . $this->table . " WHERE status = 'returned'");
+        return $this->db->single()['total'];
+    }
+
+    public function getRecentLoans($limit = 5) {
+         $query = "SELECT loans.*, members.name as member_name, books.title as book_title, books.cover_image 
+                  FROM " . $this->table . "
+                  JOIN members ON loans.member_id = members.id
+                  JOIN books ON loans.book_id = books.id
+                  ORDER BY loans.created_at DESC LIMIT :limit";
+        $this->db->query($query);
+        $this->db->bind('limit', $limit);
+        return $this->db->resultSet();
+    }
+
     public function deleteLoan($id) {
         $this->db->query('DELETE FROM ' . $this->table . ' WHERE id = :id');
         $this->db->bind('id', $id);

@@ -77,4 +77,9 @@ class BookModel {
         $this->db->execute();
         return $this->db->rowCount();
     }
+
+    public function countAll() {
+        $this->db->query('SELECT COUNT(*) as total FROM ' . $this->table);
+        return $this->db->single()['total'];
+    }
 }
